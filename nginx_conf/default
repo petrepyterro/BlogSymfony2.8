@@ -1,0 +1,122 @@
+# You may add here your
+# server {
+#	...
+# }
+# statements for each of your virtual hosts to this file
+
+##
+# You should look at the following URL's in order to grasp a solid understanding
+# of Nginx configuration files in order to fully unleash the power of Nginx.
+# http://wiki.nginx.org/Pitfalls
+# http://wiki.nginx.org/QuickStart
+# http://wiki.nginx.org/Configuration
+#
+# Generally, you will want to move this file somewhere, and start with a clean
+# file but keep this around for reference. Or just disable in sites-enabled.
+#
+# Please see /usr/share/doc/nginx-doc/examples/ for more detailed examples.
+##
+
+server {
+	#listen   80; ## listen for ipv4; this line is default and implied
+	#listen   [::]:80 default ipv6only=on; ## listen for ipv6
+	#autoindex on;
+	root /home/petrero/www/BlogSymfony2.8/web;
+	
+
+	# Make site accessible from http://localhost/
+	server_name localhost;
+    
+ 
+    # Logging
+    error_log /var/log/nginx/symfony2.8-error.log;
+    access_log /var/log/nginx/symfony2.8-access.log;
+ 
+
+    # strip app.php/ prefix if it is present
+    rewrite ^/app\.php/?(.*)$ /$1 permanent;
+
+    location / {
+    
+      try_files $uri @rewriteapp;
+    }
+
+  location @rewriteapp {
+    rewrite ^(.*)$ /app_dev.php/$1 last;
+  }
+	
+    location ~ ^/(app|app_dev|config)\.php(/|$) {
+        fastcgi_pass unix:/var/run/php5-fpm.sock;
+        fastcgi_split_path_info ^(.+\.php)(/.*)$;
+        include fastcgi_params;
+        fastcgi_param  SCRIPT_FILENAME  $realpath_root$fastcgi_script_name;
+        fastcgi_param DOCUMENT_ROOT $realpath_root;
+	
+    }	
+  location /phpmyadmin { 
+	   root /usr/share/; 
+	   index index.php index.html index.htm; 
+	   location ~ ^/phpmyadmin/(.+\.php)$ { 
+	      try_files $uri =404; 
+	      root /usr/share/; 
+	      fastcgi_pass unix:/var/run/php5-fpm.sock; 
+	      fastcgi_index index.php; 
+	      fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name; 
+ 	      include fastcgi_params; 
+	   } 
+	   location ~* ^/phpmyadmin/(.+\.(jpg|jpeg|gif|css|png|js|ico|html|xml|txt))$ { 
+	      root /usr/share/; 
+	   } 
+	}
+
+	location /phpMyAdmin { rewrite ^/* /phpmyadmin last; } 
+
+	
+
+	# deny access to .htaccess files, if Apache's document root
+	# concurs with nginx's one
+	#
+	#location ~ /\.ht {
+	#	deny all;
+	#}
+}
+
+
+# another virtual host using mix of IP-, name-, and port-based configuration
+#
+#server {
+#	listen 8000;
+#	listen somename:8080;
+#	server_name somename alias another.alias;
+#	root html;
+#	index index.html index.htm;
+#
+#	location / {
+#		try_files $uri $uri/ /index.html;
+#	}
+#}
+
+
+# HTTPS server
+#
+#server {
+#	listen 443;
+#	server_name localhost;
+#
+#	root html;
+#	index index.html index.htm;
+#
+#	ssl on;
+#	ssl_certificate cert.pem;
+#	ssl_certificate_key cert.key;
+#
+#	ssl_session_timeout 5m;
+#
+#	ssl_protocols SSLv3 TLSv1;
+#	ssl_ciphers ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv3:+EXP;
+#	ssl_prefer_server_ciphers on;
+#
+#	location / {
+#		try_files $uri $uri/ /index.html;
+#	}
+#}
