@@ -20,11 +20,7 @@ class PageController extends Controller{
   public function indexAction(){
     $em = $this->getDoctrine()->getManager();
     
-    $blogs = $em->createQueryBuilder()
-      ->select('b')
-      ->from('BlogBundle:Blog', 'b')
-      ->addOrderBy('b.created', 'DESC')
-      ->getQuery()->getResult();
+    $blogs = $em->getRepository('BlogBundle:Blog')->getLatestBlogs(1);
     
     return $this->render('BlogBundle:Page:index.html.twig', array('blogs' => $blogs));
   }
