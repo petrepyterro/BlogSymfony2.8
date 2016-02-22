@@ -20,7 +20,7 @@ class PageController extends Controller{
   public function indexAction(){
     $em = $this->getDoctrine()->getManager();
     
-    $blogs = $em->getRepository('BlogBundle:Blog')->getLatestBlogs(1);
+    $blogs = $em->getRepository('BlogBundle:Blog')->getLatestBlogs();
     
     return $this->render('BlogBundle:Page:index.html.twig', array('blogs' => $blogs));
   }
