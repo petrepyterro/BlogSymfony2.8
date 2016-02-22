@@ -18,7 +18,15 @@ class PageController extends Controller{
     * @Method("GET")
   */
   public function indexAction(){
-      return $this->render('BlogBundle:Page:index.html.twig');
+    $em = $this->getDoctrine()->getManager();
+    
+    $blogs = $em->createQueryBuilder()
+      ->select('b')
+      ->from('BlogBundle:Blog', 'b')
+      ->addOrderBy('b.created', 'DESC')
+      ->getQuery()->getResult();
+    
+    return $this->render('BlogBundle:Page:index.html.twig', array('blogs' => $blogs));
   }
   
   /**
@@ -27,6 +35,6 @@ class PageController extends Controller{
     * @Method("GET")
   */
   public function aboutAction(){
-      return $this->render('BlogBundle:Page:about.html.twig');
+    return $this->render('BlogBundle:Page:about.html.twig');
   }
 }
