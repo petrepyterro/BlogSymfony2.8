@@ -14,12 +14,7 @@ class CommentType extends AbstractType
   {
     $builder
       ->add('user')
-      ->add('comment')
-      ->add('approved')
-      ->add('created', 'datetime')
-      ->add('updated', 'datetime')
-      ->add('blog')
-    ;
+      ->add('comment');
   }
 
   /**
