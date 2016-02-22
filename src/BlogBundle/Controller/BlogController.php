@@ -20,8 +20,13 @@ class BlogController extends Controller{
    */
   public function showAction(Blog $blog)
   {
+    $em = $this->getDoctrine()->getManager();
+    
+    $comments = $em->getRepository('BlogBundle:Comment')->getCommentsForBlog($blog->getId());
+    
     return $this->render('BlogBundle:Blog:show.html.twig', array(
-      'blog' => $blog
+      'blog' => $blog,
+      'comments' => $comments
     ));
   }
 }
