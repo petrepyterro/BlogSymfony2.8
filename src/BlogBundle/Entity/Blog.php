@@ -51,14 +51,17 @@ class Blog
    * @ORM\Column(name="tags", type="text")
    */
   private $tags;
-
+  
+  /**
+   * @ORM\OneToMany(targetEntity="Comment", mappedBy="blog")
+   */
   private $comments;
   public function addComment(Comment $comment){
     $this->comments[] = $comment;
   }
 
   public function getComments(){
-    return $this->comments->toArray();
+    return $this->comments;
   }
   /**
    * @var \DateTime
