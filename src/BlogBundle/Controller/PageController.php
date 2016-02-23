@@ -33,4 +33,21 @@ class PageController extends Controller{
   public function aboutAction(){
     return $this->render('BlogBundle:Page:about.html.twig');
   }
+  
+  /**
+    *
+    * @Route("/sidebar", name="sidebar")
+    * @Method("GET")
+  */
+  public function sidebarAction(){
+    $em = $this->getDoctrine()->getManager();
+    
+    $tags = $em->getRepository('BlogBundle:Blog')->getTags();
+    
+    $tagWeights = $em->getRepository('BlogBundle:Blog')->getTagWeights($tags);
+    
+    return $this->render('BlogBundle:Page:sidebar.html.twig', array(
+      'tags' => $tagWeights
+    ));
+  }
 }
