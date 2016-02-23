@@ -15,7 +15,7 @@ class BlogController extends Controller{
   /**
    * Finds and displays a blog entity.
    *
-   * @Route("/{id}", name="blog_show")
+   * @Route("/{id}/{slug}", name="blog_show")
    * @Method("GET")
    */
   public function showAction(Blog $blog)

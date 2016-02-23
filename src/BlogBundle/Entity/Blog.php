@@ -56,9 +56,6 @@ class Blog
    * @ORM\OneToMany(targetEntity="Comment", mappedBy="blog")
    */
   private $comments;
-  public function addComment(Comment $comment){
-    $this->comments[] = $comment;
-  }
 
   public function getComments(){
     return $this->comments;
@@ -75,7 +72,16 @@ class Blog
    * @ORM\Column(name="updated", type="datetime")
    */
   private $updated;
-
+  
+  
+  /**
+   * @var string
+   *
+   * @ORM\Column(name="slug", type="string", length=255)
+   */
+  private $slug;
+  
+  
   public function __construct(){
     $this->setCreated(new \DateTime());
     $this->setUpdated(new \DateTime());
@@ -108,6 +114,8 @@ class Blog
   public function setTitle($title)
   {
     $this->title = $title;
+    $this->setSlug($this->title);
+    
     return $this;
   }
   /**
@@ -235,5 +243,72 @@ class Blog
   {
     $this->updated = $updated;
     return $this;
+  }
+  
+  /**
+   * Set slug
+   *
+   * @param string $slug
+   * @return Blog
+   */
+  public function setSlug($slug){
+    $this->slug = $this->slugify($slug);
+    
+    return $this;
+  }
+  
+  /**
+   * Get slug
+   *
+   * @return string 
+   */
+  public function getSlug(){
+    return $this->slug;
+  }
+  
+  /**
+   * Add comment
+   *
+   * @param \BlogBundle\Entity\Comment $comment
+   * @return Blog
+   */
+  public function addComment(\BlogBundle\Entity\Comment $comment){
+    $this->comments[] = $comment;
+    
+    return $this;
+  }
+  
+  /**
+   * Remove comments
+   *
+   * @param \BlogBundle\Entity\Comment $comment
+   */
+  public function removeComment(\BlogBundle\Entity\Comment $comment){
+    $this->comments->removeElement($comment);
+  }
+  
+  private function slugify($text){
+    //replace non letter or digits by -
+    $text = preg_replace('#[^\\pL\d]+#u', '-', $text);
+
+    // trim
+    $text = trim($text, '-');
+
+    // transliterate
+    if (function_exists('iconv')){
+      $text = iconv('utf-8', 'us-ascii//TRANSLIT', $text);
+    }
+
+    //lowercase
+    $text = strtolower($text);
+
+    //remove unwanted characters
+    $text = preg_replace('#[^-\w]+#', '', $text);
+
+    if (empty($text)){
+      return 'n-a';
+    }
+
+    return $text;
   }
 }
